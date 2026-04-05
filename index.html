@@ -3,35 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Realtime Firebase</title>
+    <title>Zennie Realtime Chat</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; background: #f4f4f9; }
-        header { padding: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
-        #message-form { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #ccc; }
-        input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        #username { width: 100px; }
+        :root { --primary: #075e54; --secondary: #128c7e; --bg: #e5ddd5; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; background: var(--bg); }
+        
+        header { padding: 15px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #my-id-display { font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
+
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Message Bubbles */
+        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .public { background: white; align-self: flex-start; border-left: 5px solid #34b7f1; }
+        .private { background: #dcf8c6; align-self: flex-end; border-left: 5px solid #25d366; }
+        
+        .meta { font-size: 10px; font-weight: bold; margin-bottom: 4px; display: block; }
+        .dest { color: #e91e63; font-style: italic; }
+
+        #input-area { background: #f0f0f0; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #ddd; }
+        .row { display: flex; gap: 10px; }
+        
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
         #message-input { flex: 1; }
-        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; background: #007bff; color: white; }
-        .btn-delete { background: #dc3545; font-size: 12px; }
-        .msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .user-name { font-weight: bold; color: #007bff; font-size: 0.9em; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; background: var(--secondary); color: white; font-weight: bold; cursor: pointer; }
+        .btn-clear { background: #b33939; font-size: 11px; }
     </style>
 </head>
 <body>
 
 <header>
-    <strong>Firebase Chat</strong>
-    <button id="clear-btn" class="btn-delete">Hapus Semua Pesan</button>
+    <div>
+        <strong>Zennie Chat</strong>
+        <div id="my-id-display">Generating ID...</div>
+    </div>
+    <button id="clear-btn" class="btn-clear">Hapus Database</button>
 </header>
 
 <div id="chat-box"></div>
 
-<form id="message-form">
-    <input type="text" id="username" placeholder="Nama" required>
-    <input type="text" id="message-input" placeholder="Ketik pesan..." required>
-    <button type="submit">Kirim</button>
-</form>
+<div id="input-area">
+    <div class="row">
+        <input type="text" id="username" placeholder="Nama Anda" required>
+        <select id="msg-type">
+            <option value="public">Publik</option>
+            <option value="private">Pribadi (PM)</option>
+        </select>
+        <input type="text" id="target-id" placeholder="ID Tujuan PM">
+    </div>
+    <form id="message-form" class="row">
+        <input type="text" id="message-input" placeholder="Ketik pesan..." required>
+        <button type="submit">Kirim</button>
+    </form>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -48,58 +72,85 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const messagesCol = collection(db, "messages");
+    
+    // Referensi Koleksi
+    const msgCol = collection(db, "messages");
+    const userCol = collection(db, "users");
 
-    const chatBox = document.getElementById("chat-box");
-    const messageForm = document.getElementById("message-form");
-    const clearBtn = document.getElementById("clear-btn");
+    let myUniqueID = "";
+    const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
 
-    // Audio untuk notifikasi
-    const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+    // 1. DAFTARKAN USER KE DATABASE SAAT MASUK
+    async function registerUser() {
+        const newDoc = await addDoc(userCol, {
+            joinedAt: serverTimestamp(),
+            status: "online"
+        });
+        myUniqueID = newDoc.id; // Menggunakan ID dokumen Firestore sebagai ID Unik
+        document.getElementById('my-id-display').innerText = "ID ANDA: " + myUniqueID;
+    }
+    registerUser();
 
-    let isInitialLoad = true;
-
-    // 1. Kirim Pesan
-    messageForm.addEventListener("submit", async (e) => {
+    // 2. KIRIM PESAN
+    document.getElementById('message-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const user = document.getElementById("username").value;
-        const text = document.getElementById("message-input").value;
+        const type = document.getElementById('msg-type').value;
+        const target = document.getElementById('target-id').value.trim();
 
-        await addDoc(messagesCol, {
-            name: user,
-            message: text,
+        if (type === 'private' && !target) return alert("Isi ID Tujuan!");
+
+        await addDoc(msgCol, {
+            senderID: myUniqueID,
+            senderName: document.getElementById('username').value || "Anon",
+            text: document.getElementById('message-input').value,
+            type: type,
+            recipient: type === 'private' ? target : 'all',
             timestamp: serverTimestamp()
         });
-        document.getElementById("message-input").value = "";
+        document.getElementById('message-input').value = "";
     });
 
-    // 2. Baca Pesan Secara Realtime & Sound Notif
-    const q = query(messagesCol, orderBy("timestamp", "asc"));
-    onSnapshot(q, (snapshot) => {
-        // Cek jika ada pesan baru masuk (bukan saat loading pertama kali)
-        if (!isInitialLoad && snapshot.docChanges().some(change => change.type === "added")) {
-            notificationSound.play().catch(e => console.log("User must interact first for sound"));
-        }
+    // 3. LISTEN PESAN (REALTIME)
+    let initialLoad = true;
+    const q = query(msgCol, orderBy("timestamp", "asc"));
+    
+    onSnapshot(q, (snap) => {
+        const chatBox = document.getElementById('chat-box');
         
+        // Notif suara jika ada pesan baru masuk (selain dari kita sendiri)
+        if (!initialLoad && snap.docChanges().some(c => c.type === "added")) {
+            const lastDoc = snap.docChanges().find(c => c.type === "added").doc.data();
+            if (lastDoc.senderID !== myUniqueID) sound.play().catch(() => {});
+        }
+
         chatBox.innerHTML = "";
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const div = document.createElement("div");
-            div.classList.add("msg");
-            div.innerHTML = `<span class="user-name">${data.name}</span> ${data.message}`;
-            chatBox.appendChild(div);
+        snap.forEach(d => {
+            const data = d.data();
+            
+            // Filter Keamanan: Hanya tampilkan jika Publik atau ditujukan ke kita/dari kita
+            const isVisible = data.type === 'public' || data.recipient === myUniqueID || data.senderID === myUniqueID;
+            
+            if (isVisible) {
+                const div = document.createElement('div');
+                div.className = `msg ${data.type}`;
+                const destInfo = data.type === 'private' ? `<span class="dest"> ke ${data.recipient}</span>` : '';
+                
+                div.innerHTML = `
+                    <span class="meta">${data.senderName} (${data.senderID})${destInfo}</span>
+                    ${data.text}
+                `;
+                chatBox.appendChild(div);
+            }
         });
         chatBox.scrollTop = chatBox.scrollHeight;
-        isInitialLoad = false;
+        initialLoad = false;
     });
 
-    // 3. Fungsi Hapus Semua Pesan
-    clearBtn.addEventListener("click", async () => {
-        if (confirm("Hapus semua pesan secara permanen?")) {
-            const querySnapshot = await getDocs(messagesCol);
-            querySnapshot.forEach(async (document) => {
-                await deleteDoc(doc(db, "messages", document.id));
-            });
+    // 4. HAPUS SEMUA
+    document.getElementById('clear-btn').addEventListener('click', async () => {
+        if (confirm("Hapus semua data pesan?")) {
+            const snap = await getDocs(msgCol);
+            snap.forEach(d => deleteDoc(doc(db, "messages", d.id)));
         }
     });
 </script>
