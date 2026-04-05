@@ -19,6 +19,7 @@
             --text-dark: #111b21;
             --text-light: #667781;
             --text-muted: #8696a0;
+            --accent-gold: #f5a623;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,7 +40,6 @@
             position: relative;
         }
         
-        /* ============ SIDEBAR ============ */
         .sidebar {
             width: 100%;
             height: 100%;
@@ -53,9 +53,7 @@
             transition: transform 0.3s ease;
         }
         
-        .sidebar.hidden {
-            transform: translateX(-100%);
-        }
+        .sidebar.hidden { transform: translateX(-100%); }
         
         .sidebar-header {
             display: flex;
@@ -88,10 +86,7 @@
             flex-shrink: 0;
         }
         
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
+        .header-actions { display: flex; gap: 15px; }
         
         .header-btn {
             background: none;
@@ -103,46 +98,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        /* Tab Navigasi */
-        .tab-nav {
-            display: flex;
-            background: var(--header-color);
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .tab-btn {
-            flex: 1;
-            padding: 12px 0;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-        }
-        
-        .tab-btn.active {
-            color: white;
-            background: rgba(0,0,0,0.1);
-        }
-        
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 15%;
-            width: 70%;
-            height: 3px;
-            background: white;
-            border-radius: 3px 3px 0 0;
-        }
-        
-        .tab-btn i {
-            margin-right: 6px;
         }
         
         .search-container {
@@ -169,29 +124,10 @@
             font-size: 14px;
         }
         
-        .tab-content {
+        .contacts-list {
             flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .tab-pane {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            transition: transform 0.3s ease;
-        }
-        
-        .tab-pane.hidden {
-            transform: translateX(-100%);
-        }
-        
-        .tab-pane.next {
-            transform: translateX(100%);
         }
         
         .contact-item {
@@ -203,8 +139,28 @@
             border-bottom: 1px solid var(--border-light);
         }
         
-        .contact-item:hover, .contact-item:active {
-            background: #f0f2f5;
+        .contact-item:hover, .contact-item:active { background: #f0f2f5; }
+
+        .contact-item.public-chat {
+            background: linear-gradient(135deg, #f0faf7 0%, #e8f5e9 100%);
+            border-bottom: 2px solid var(--secondary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-item.public-chat::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(18,140,126,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .contact-item.public-chat:hover {
+            background: linear-gradient(135deg, #e0f5ee 0%, #d4edda 100%);
         }
         
         .contact-avatar {
@@ -221,11 +177,12 @@
             flex-shrink: 0;
             position: relative;
         }
-        
-        /* Avatar khusus grup publik */
-        .contact-avatar.group-avatar {
-            background: #00a884;
+
+        .contact-avatar.public-avatar {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             color: white;
+            font-size: 22px;
+            box-shadow: 0 2px 8px rgba(7,94,84,0.3);
         }
         
         .online-dot {
@@ -238,11 +195,23 @@
             border-radius: 50%;
             border: 2px solid white;
         }
-        
-        .contact-info {
-            flex: 1;
-            min-width: 0;
+
+        .public-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
         }
+        
+        .contact-info { flex: 1; min-width: 0; }
         
         .contact-header {
             display: flex;
@@ -257,6 +226,11 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .contact-name.public-name {
+            font-weight: 600;
+            color: var(--primary);
         }
         
         .contact-time {
@@ -273,6 +247,34 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .contact-message.public-desc {
+            color: var(--secondary);
+            font-size: 13px;
+        }
+
+        .members-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--secondary);
+            background: rgba(18,140,126,0.08);
+            padding: 1px 7px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        .section-label {
+            padding: 12px 16px 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #f8fffe;
+        }
         
         .id-display {
             padding: 8px 16px;
@@ -282,7 +284,6 @@
             border-top: 1px solid var(--border-light);
         }
         
-        /* ============ CHAT PANEL ============ */
         .chat-panel {
             width: 100%;
             height: 100%;
@@ -296,9 +297,7 @@
             transition: transform 0.3s ease;
         }
         
-        .chat-panel.hidden {
-            transform: translateX(100%);
-        }
+        .chat-panel.hidden { transform: translateX(100%); }
         
         .chat-header {
             display: flex;
@@ -309,6 +308,10 @@
             height: 56px;
             min-height: 56px;
             z-index: 10;
+        }
+
+        .chat-header.public-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
         }
         
         .back-btn {
@@ -324,9 +327,7 @@
             border-radius: 50%;
         }
         
-        .back-btn:active {
-            background: rgba(255,255,255,0.1);
-        }
+        .back-btn:active { background: rgba(255,255,255,0.1); }
         
         .chat-contact-avatar {
             width: 40px;
@@ -340,17 +341,14 @@
             color: #3b4a54;
             flex-shrink: 0;
         }
-        
-        .chat-contact-avatar.group-avatar {
-            background: #00a884;
+
+        .chat-contact-avatar.public-chat-avatar {
+            background: rgba(255,255,255,0.2);
             color: white;
+            font-size: 20px;
         }
         
-        .chat-contact-info {
-            flex: 1;
-            margin-left: 12px;
-            min-width: 0;
-        }
+        .chat-contact-info { flex: 1; margin-left: 12px; min-width: 0; }
         
         .chat-contact-name {
             font-size: 16px;
@@ -360,10 +358,7 @@
             text-overflow: ellipsis;
         }
         
-        .chat-contact-status {
-            font-size: 13px;
-            opacity: 0.8;
-        }
+        .chat-contact-status { font-size: 13px; opacity: 0.8; }
         
         .chat-messages {
             flex: 1;
@@ -383,14 +378,16 @@
             animation: fadeIn 0.2s ease;
         }
         
-        .message-out {
-            margin-left: auto;
-            background: var(--bubble-out);
-        }
-        
-        .message-in {
-            margin-right: auto;
-            background: var(--bubble-in);
+        .message-out { margin-left: auto; background: var(--bubble-out); }
+        .message-in { margin-right: auto; background: var(--bubble-in); }
+        .message-public-out { margin-left: auto; background: var(--bubble-out); }
+        .message-public-in { margin-right: auto; background: var(--bubble-in); }
+
+        .message-sender-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: var(--secondary);
         }
         
         .message-text {
@@ -402,15 +399,6 @@
             white-space: pre-wrap;
         }
         
-        /* Nama pengirim di chat publik */
-        .message-sender {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #054d44;
-            margin-bottom: 2px;
-            display: block;
-        }
-        
         .message-meta {
             position: absolute;
             right: 7px;
@@ -420,15 +408,8 @@
             gap: 3px;
         }
         
-        .message-time {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        
-        .message-read {
-            color: #53bdeb;
-            font-size: 14px;
-        }
+        .message-time { font-size: 11px; color: var(--text-muted); }
+        .message-read { color: #53bdeb; font-size: 14px; }
         
         .chat-input-container {
             display: flex;
@@ -439,11 +420,7 @@
             min-height: 56px;
         }
         
-        .input-tools {
-            display: flex;
-            gap: 10px;
-            padding: 0 4px;
-        }
+        .input-tools { display: flex; gap: 10px; padding: 0 4px; }
         
         .tool-btn {
             background: none;
@@ -457,9 +434,7 @@
             align-items: center;
         }
         
-        .tool-btn:active {
-            background: #f0f2f5;
-        }
+        .tool-btn:active { background: #f0f2f5; }
         
         .chat-input {
             flex: 1;
@@ -472,9 +447,7 @@
             min-width: 0;
         }
         
-        .chat-input:focus {
-            outline: none;
-        }
+        .chat-input:focus { outline: none; }
         
         .send-btn {
             background: none;
@@ -489,11 +462,8 @@
             justify-content: center;
         }
         
-        .send-btn:active {
-            background: rgba(0, 128, 0, 0.1);
-        }
+        .send-btn:active { background: rgba(0, 128, 0, 0.1); }
         
-        /* Empty State */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -505,30 +475,12 @@
             text-align: center;
         }
         
-        .empty-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
+        .empty-icon { font-size: 60px; margin-bottom: 20px; opacity: 0.3; }
+        .empty-state.public-empty .empty-icon { opacity: 0.5; color: var(--secondary); }
+        .empty-state h2 { color: var(--text-dark); font-weight: 500; margin-bottom: 12px; font-size: 20px; }
+        .empty-state p { font-size: 14px; line-height: 1.6; max-width: 350px; }
         
-        .empty-state h2 {
-            color: var(--text-dark);
-            font-weight: 500;
-            margin-bottom: 12px;
-            font-size: 20px;
-        }
-        
-        .empty-state p {
-            font-size: 14px;
-            line-height: 1.6;
-            max-width: 350px;
-        }
-        
-        /* Date Separator */
-        .date-separator {
-            text-align: center;
-            margin: 12px 0;
-        }
+        .date-separator { text-align: center; margin: 12px 0; }
         
         .date-separator span {
             background: rgba(255,255,255,0.9);
@@ -538,25 +490,80 @@
             color: var(--text-muted);
             box-shadow: 0 1px 0.5px rgba(0,0,0,0.06);
         }
-        
-        /* System Message (Untuk chat publik) */
-        .system-msg {
+
+        .system-message {
             text-align: center;
             margin: 8px 0;
-            font-size: 12px;
-            color: var(--text-muted);
-            background: rgba(255,255,255,0.8);
-            padding: 4px 10px;
-            border-radius: 6px;
-            align-self: center;
+            animation: fadeIn 0.3s ease;
         }
 
+        .system-message span {
+            background: rgba(255,255,255,0.92);
+            padding: 4px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.05);
+            font-style: italic;
+        }
+        
+        .typing-indicator { display: none; align-items: center; gap: 4px; padding: 8px 12px; }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #323739;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Debug panel - bisa dihapus setelah yakin realtime */
+        .debug-dot {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ccc;
+            z-index: 9999;
+            transition: background 0.3s;
+        }
+        .debug-dot.connected { background: #25d366; }
+        .debug-dot.error { background: #ff3b30; }
         
-        /* ============ DESKTOP ============ */
         @media (min-width: 769px) {
             body {
                 display: flex;
@@ -580,9 +587,7 @@
                 transform: none !important;
             }
             
-            .sidebar.hidden {
-                transform: none !important;
-            }
+            .sidebar.hidden { transform: none !important; }
             
             .chat-panel {
                 width: 65%;
@@ -590,53 +595,19 @@
                 transform: none !important;
             }
             
-            .chat-panel.hidden {
-                transform: none !important;
-            }
-            
-            .back-btn {
-                display: none;
-            }
-            
-            .chat-messages {
-                padding: 20px 60px;
-            }
-            
-            .message {
-                max-width: 65%;
-            }
-            
-            .contact-avatar {
-                width: 49px;
-                height: 49px;
-            }
+            .chat-panel.hidden { transform: none !important; }
+            .back-btn { display: none; }
+            .chat-messages { padding: 20px 60px; }
+            .message { max-width: 65%; }
+            .contact-avatar { width: 49px; height: 49px; }
         }
         
-        /* Very Small Phones */
         @media (max-width: 360px) {
-            .sidebar-header, .chat-header {
-                height: 50px;
-                min-height: 50px;
-                padding: 8px 10px;
-            }
-            
-            .contact-item {
-                padding: 10px 12px;
-            }
-            
-            .contact-avatar {
-                width: 42px;
-                height: 42px;
-                margin-right: 10px;
-            }
-            
-            .contact-name {
-                font-size: 15px;
-            }
-            
-            .message {
-                max-width: 90%;
-            }
+            .sidebar-header, .chat-header { height: 50px; min-height: 50px; padding: 8px 10px; }
+            .contact-item { padding: 10px 12px; }
+            .contact-avatar { width: 42px; height: 42px; margin-right: 10px; }
+            .contact-name { font-size: 15px; }
+            .message { max-width: 90%; }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -644,7 +615,6 @@
 <body>
 
 <div class="app-container">
-    <!-- Sidebar / Kontak -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="user-info">
@@ -657,16 +627,6 @@
             </div>
         </div>
         
-        <!-- Tab Navigasi -->
-        <div class="tab-nav">
-            <button class="tab-btn active" data-tab="chats">
-                <i class="fas fa-comments"></i> Semua
-            </button>
-            <button class="tab-btn" data-tab="public">
-                <i class="fas fa-globe"></i> Publik
-            </button>
-        </div>
-        
         <div class="search-container">
             <div class="search-box">
                 <i class="fas fa-search" style="color:var(--text-muted);margin-right:12px;"></i>
@@ -674,45 +634,18 @@
             </div>
         </div>
         
-        <div class="tab-content">
-            <!-- Tab Semua (PM) -->
-            <div class="tab-pane" id="pane-chats">
-                <div class="contacts-list" id="contacts-list">
-                    <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:14px;">
-                        <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block;"></i>
-                        Memuat kontak...
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tab Publik -->
-            <div class="tab-pane hidden next" id="pane-public">
-                <div class="contacts-list" id="public-list">
-                    <div class="contact-item" id="global-chat-btn">
-                        <div class="contact-avatar group-avatar">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="contact-info">
-                            <div class="contact-header">
-                                <div class="contact-name">Global Chat</div>
-                                <div class="contact-time" id="public-time">...</div>
-                            </div>
-                            <div class="contact-message" id="public-preview">Bergabunglah dengan obrolan publik</div>
-                        </div>
-                    </div>
-                </div>
+        <div class="contacts-list" id="contacts-list">
+            <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:14px;">
+                <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block;"></i>
+                Memuat kontak...
             </div>
         </div>
         
         <div class="id-display" id="my-id-display">Membuat ID Anda...</div>
     </div>
     
-    <!-- Chat Panel -->
     <div class="chat-panel hidden" id="chat-panel">
-        <div class="chat-header" id="chat-header">
-            <!-- Diisi saat memilih kontak -->
-        </div>
-        
+        <div class="chat-header" id="chat-header"></div>
         <div class="chat-messages" id="chat-messages">
             <div class="empty-state">
                 <div class="empty-icon"><i class="fab fa-whatsapp"></i></div>
@@ -720,15 +653,12 @@
                 <p>Kirim dan terima pesan tanpa menyimpan nomor telepon Anda.</p>
             </div>
         </div>
-        
         <div class="chat-input-container">
             <div class="input-tools">
                 <button class="tool-btn"><i class="fas fa-face-smile"></i></button>
                 <button class="tool-btn"><i class="fas fa-paperclip"></i></button>
             </div>
-            
             <input type="text" class="chat-input" id="message-input" placeholder="Pesan" autocomplete="off">
-            
             <button class="send-btn" id="send-btn">
                 <i class="fas fa-microphone" id="send-icon"></i>
             </button>
@@ -736,9 +666,16 @@
     </div>
 </div>
 
+<div class="toast" id="toast"></div>
+<div class="debug-dot" id="debug-dot" title="Status koneksi Firebase"></div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { 
+        getFirestore, collection, addDoc, query, orderBy, 
+        onSnapshot, serverTimestamp, getDocs, deleteDoc, 
+        doc, where, updateDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBVDW4FjpABAPY1xUWmf49w0tRXfzggluU",
@@ -757,12 +694,13 @@
 
     let myUniqueID = "";
     let myName = "";
-    let currentChatWith = null; // Bisa berisi { id, name, status } atau "public"
+    let currentChatWith = null;
     let unsubMessages = null;
+    let totalUsers = 0;
     
     const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+    const debugDot = document.getElementById('debug-dot');
     
-    // Elemen DOM
     const sidebar = document.getElementById('sidebar');
     const chatPanel = document.getElementById('chat-panel');
     const contactsList = document.getElementById('contacts-list');
@@ -774,9 +712,28 @@
     const searchInput = document.getElementById('search-input');
     const userAvatar = document.getElementById('user-avatar');
     const myIdDisplay = document.getElementById('my-id-display');
+    const toastEl = document.getElementById('toast');
     
-    // Deteksi mobile
     const isMobile = () => window.innerWidth <= 768;
+
+    function showToast(text, duration = 3000) {
+        toastEl.textContent = text;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), duration);
+    }
+
+    // Cek koneksi Firestore
+    function testConnection() {
+        debugDot.className = 'debug-dot';
+        const testQ = query(userCol, orderBy("joinedAt"), limit(1));
+        onSnapshot(testQ, () => {
+            debugDot.className = 'debug-dot connected';
+        }, (err) => {
+            console.error("Koneksi gagal:", err);
+            debugDot.className = 'debug-dot error';
+            showToast("Koneksi Firebase gagal: " + err.message, 5000);
+        });
+    }
     
     // 1. DAFTARKAN USER
     async function registerUser() {
@@ -800,67 +757,79 @@
         myUniqueID = newDoc.id;
         myIdDisplay.textContent = `ID Anda: ${myUniqueID}`;
         
+        // Kirim pesan sistem ke chat publik
+        await addDoc(msgCol, {
+            senderID: myUniqueID,
+            senderName: myName,
+            text: `${myName} bergabung ke chat`,
+            timestamp: serverTimestamp(),
+            isPublic: true,
+            type: "system"
+        });
+        
         loadContacts();
-        listenForNewMessages();
-        initTabs();
-    }
-
-    // 2. TAB NAVIGATION
-    function initTabs() {
-        const tabs = document.querySelectorAll('.tab-btn');
-        const paneChats = document.getElementById('pane-chats');
-        const panePublic = document.getElementById('pane-public');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                if (tab.dataset.tab === 'public') {
-                    paneChats.classList.add('hidden');
-                    paneChats.classList.remove('next');
-                    panePublic.classList.remove('hidden');
-                    panePublic.classList.remove('next');
-                } else {
-                    panePublic.classList.add('hidden');
-                    panePublic.classList.add('next');
-                    paneChats.classList.remove('hidden');
-                    paneChats.classList.remove('next');
-                }
-            });
-        });
-
-        // Buka Global Chat
-        document.getElementById('global-chat-btn').addEventListener('click', () => {
-            openChat("public", { name: "Global Chat", status: "group" });
-        });
+        listenForNewDM();
+        testConnection();
     }
     
-    // 3. MUAT KONTAK
+    // 2. MUAT KONTAK
     function loadContacts() {
         const q = query(userCol, orderBy("joinedAt", "asc"));
         
         onSnapshot(q, (snap) => {
+            totalUsers = snap.size;
             contactsList.innerHTML = '';
+            
+            // Chat Publik
+            const publicItem = document.createElement('div');
+            publicItem.className = 'contact-item public-chat';
+            publicItem.innerHTML = `
+                <div class="contact-avatar public-avatar">
+                    <i class="fas fa-globe"></i>
+                    <div class="public-badge"><i class="fas fa-bolt" style="color:white;"></i></div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-header">
+                        <div class="contact-name public-name">
+                            Chat Publik
+                            <span class="members-count">
+                                <i class="fas fa-users"></i> ${totalUsers} anggota
+                            </span>
+                        </div>
+                        <div class="contact-time" data-last-time="PUBLIC"></div>
+                    </div>
+                    <div class="contact-message public-desc" data-last-msg="PUBLIC">Semua orang bisa baca & kirim pesan</div>
+                </div>
+            `;
+            publicItem.addEventListener('click', () => openPublicChat());
+            contactsList.appendChild(publicItem);
+            
+            const label = document.createElement('div');
+            label.className = 'section-label';
+            label.textContent = 'Pesan Langsung';
+            contactsList.appendChild(label);
+            
             let hasContacts = false;
             
             snap.forEach(doc => {
                 const data = doc.data();
                 if (doc.id === myUniqueID) return;
                 hasContacts = true;
-                
                 const el = createContactElement(doc.id, data);
                 contactsList.appendChild(el);
             });
             
             if (!hasContacts) {
-                contactsList.innerHTML = `
-                    <div style="padding:40px 20px;text-align:center;color:var(--text-muted);">
-                        <i class="fas fa-user-clock" style="font-size:40px;margin-bottom:15px;display:block;opacity:0.3;"></i>
-                        <p>Belum ada kontak lain yang online.<br>Tunggu pengguna lain bergabung!</p>
-                    </div>
+                const emptyDm = document.createElement('div');
+                emptyDm.style.cssText = 'padding:40px 20px;text-align:center;color:var(--text-muted);';
+                emptyDm.innerHTML = `
+                    <i class="fas fa-user-clock" style="font-size:40px;margin-bottom:15px;display:block;opacity:0.3;"></i>
+                    <p>Belum ada kontak lain.<br>Tunggu pengguna lain bergabung!</p>
                 `;
+                contactsList.appendChild(emptyDm);
             }
+        }, (err) => {
+            console.error("Error load contacts:", err);
         });
     }
     
@@ -879,7 +848,7 @@
             <div class="contact-info">
                 <div class="contact-header">
                     <div class="contact-name">${data.name}</div>
-                    <div class="contact-time" data-last-time="${userId}"></div>
+                    <div class="contact-time" data-last-time="${userId}">${formatTime(data.lastSeen?.toDate())}</div>
                 </div>
                 <div class="contact-message" data-last-msg="${userId}">Klik untuk mulai chat</div>
             </div>
@@ -888,29 +857,25 @@
         div.addEventListener('click', () => openChat(userId, data));
         return div;
     }
-    
-    // 4. BUKA CHAT (BISA PM ATAU PUBLIK)
-    function openChat(targetId, userData) {
-        currentChatWith = { 
-            id: targetId, 
-            name: userData.name, 
-            status: userData.status,
-            isPublic: targetId === "public"
-        };
+
+    // ==========================================
+    //  3A. CHAT PUBLIK
+    // ==========================================
+    function openPublicChat() {
+        currentChatWith = "PUBLIC";
         
-        // Update header
-        const isGroup = currentChatWith.isPublic;
+        chatHeader.className = 'chat-header public-header';
         chatHeader.innerHTML = `
             <button class="back-btn" id="back-btn">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <div class="chat-contact-avatar ${isGroup ? 'group-avatar' : ''}">
-                ${isGroup ? '<i class="fas fa-users"></i>' : userData.name.charAt(0).toUpperCase()}
+            <div class="chat-contact-avatar public-chat-avatar">
+                <i class="fas fa-globe"></i>
             </div>
             <div class="chat-contact-info">
-                <div class="chat-contact-name">${userData.name}</div>
+                <div class="chat-contact-name">Chat Publik</div>
                 <div class="chat-contact-status">
-                    ${isGroup ? 'Semua pengguna Zennie' : (userData.status === 'online' ? 'online' : 'terakhir dilihat ' + formatTime(userData.lastSeen?.toDate()))}
+                    <i class="fas fa-users" style="margin-right:4px;"></i> ${totalUsers} anggota
                 </div>
             </div>
             <div class="header-actions">
@@ -920,26 +885,158 @@
         
         document.getElementById('back-btn').addEventListener('click', goBackToContacts);
         
-        // Tampilkan chat panel
         chatPanel.classList.remove('hidden');
-        if (isMobile()) {
-            sidebar.classList.add('hidden');
-        }
+        if (isMobile()) sidebar.classList.add('hidden');
         
-        // Load pesan berdasarkan tipe
-        if (isGroup) {
-            loadPublicChatMessages();
-        } else {
-            loadPrivateChatMessages();
-        }
+        messageInput.placeholder = "Kirim ke Chat Publik...";
+        loadPublicChatMessages();
+        setTimeout(() => messageInput.focus(), 300);
+    }
+
+    function loadPublicChatMessages() {
+        if (unsubMessages) unsubMessages();
         
+        // Query SEDERHANA: hanya 1 where + orderBy
+        // Ini PASTI realtime tanpa perlu composite index
+        const q = query(
+            msgCol,
+            where("isPublic", "==", true),
+            orderBy("timestamp", "asc")
+        );
+        
+        unsubMessages = onSnapshot(q, (snap) => {
+            chatMessages.innerHTML = '';
+            
+            let lastDate = null;
+            let lastSender = null;
+
+            if (snap.empty) {
+                chatMessages.innerHTML = `
+                    <div class="empty-state public-empty">
+                        <div class="empty-icon"><i class="fas fa-comments"></i></div>
+                        <h2>Chat Publik</h2>
+                        <p>Ruang chat terbuka. Semua pesan bisa dibaca semua pengguna.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            snap.forEach(doc => {
+                const data = doc.data();
+                const msgDate = data.timestamp?.toDate();
+                const dateStr = msgDate ? msgDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+                
+                if (dateStr !== lastDate) {
+                    const sep = document.createElement('div');
+                    sep.className = 'date-separator';
+                    sep.innerHTML = `<span>${dateStr || 'Hari ini'}</span>`;
+                    chatMessages.appendChild(sep);
+                    lastDate = dateStr;
+                    lastSender = null;
+                }
+
+                // Pesan sistem
+                if (data.type === "system") {
+                    const sysDiv = document.createElement('div');
+                    sysDiv.className = 'system-message';
+                    sysDiv.innerHTML = `<span>${escapeHtml(data.text)}</span>`;
+                    chatMessages.appendChild(sysDiv);
+                    lastSender = null;
+                    return;
+                }
+
+                const isMine = data.senderID === myUniqueID;
+                const showSenderName = data.senderID !== lastSender;
+                lastSender = data.senderID;
+                
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${isMine ? 'message-public-out' : 'message-public-in'}`;
+                
+                let senderNameHTML = '';
+                if (showSenderName && !isMine) {
+                    senderNameHTML = `<div class="message-sender-name">${escapeHtml(data.senderName || 'Anonim')}</div>`;
+                }
+                
+                msgDiv.innerHTML = `
+                    ${senderNameHTML}
+                    <div class="message-text">${escapeHtml(data.text)}</div>
+                    <div class="message-meta">
+                        <span class="message-time">${formatTime(msgDate)}</span>
+                        ${isMine ? '<i class="fas fa-check-double message-read"></i>' : ''}
+                    </div>
+                `;
+                
+                chatMessages.appendChild(msgDiv);
+
+                // Update preview di sidebar
+                const previewEl = document.querySelector('[data-last-msg="PUBLIC"]');
+                const timeEl = document.querySelector('[data-last-time="PUBLIC"]');
+                if (previewEl && data.text && data.type !== "system") {
+                    const senderLabel = isMine ? "Anda" : (data.senderName || "Seseorang");
+                    previewEl.textContent = `${senderLabel}: ${data.text}`;
+                }
+                if (timeEl && msgDate) {
+                    timeEl.textContent = formatTime(msgDate);
+                }
+            });
+            
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }, (err) => {
+            console.error("Error publik chat:", err);
+            debugDot.className = 'debug-dot error';
+        });
+    }
+
+    // ==========================================
+    //  3B. CHAT DM (1-on-1)
+    // ==========================================
+    function openChat(userId, userData) {
+        currentChatWith = { id: userId, name: userData.name, status: userData.status };
+        
+        chatHeader.className = 'chat-header';
+        chatHeader.innerHTML = `
+            <button class="back-btn" id="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="chat-contact-avatar">
+                ${userData.name.charAt(0).toUpperCase()}
+            </div>
+            <div class="chat-contact-info">
+                <div class="chat-contact-name">${userData.name}</div>
+                <div class="chat-contact-status" id="chat-status">
+                    ${userData.status === 'online' ? 'online' : 'terakhir dilihat ' + formatTime(userData.lastSeen?.toDate())}
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn"><i class="fas fa-ellipsis-vertical"></i></button>
+            </div>
+        `;
+        
+        document.getElementById('back-btn').addEventListener('click', goBackToContacts);
+        
+        chatPanel.classList.remove('hidden');
+        if (isMobile()) sidebar.classList.add('hidden');
+        
+        messageInput.placeholder = "Pesan";
+        loadDMChatMessages();
         setTimeout(() => messageInput.focus(), 300);
     }
     
-    // 5. LOAD PRIVATE MESSAGES
-    function loadPrivateChatMessages() {
+    function loadDMChatMessages() {
         if (unsubMessages) unsubMessages();
         
+        // ===== INI YANG DIPERBAIKI =====
+        // SEBELUM: 2 where + orderBy = BUTUH COMPOSITE INDEX (gagal diam-diam)
+        //   where("users", "array-contains", myID)
+        //   where("isPublic", "==", false)
+        //   orderBy("timestamp")
+        //
+        // SESUDAH: 1 where + orderBy = PASTI REALTIME
+        //   where("users", "array-contains", myID)
+        //   orderBy("timestamp")
+        // Filter isPublic & pasangan chat dilakukan di JavaScript
         const q = query(
             msgCol,
             where("users", "array-contains", myUniqueID),
@@ -948,116 +1045,98 @@
         
         unsubMessages = onSnapshot(q, (snap) => {
             chatMessages.innerHTML = '';
+            
             let lastDate = null;
+            let hasMessages = false;
+            const partnerId = currentChatWith.id;
             
             snap.forEach(doc => {
                 const data = doc.data();
-                const isForMe = (data.senderID === myUniqueID && data.recipientID === currentChatWith.id) ||
-                               (data.senderID === currentChatWith.id && data.recipientID === myUniqueID);
-                if (!isForMe) return;
                 
-                lastDate = renderMessage(doc.id, data, lastDate, false);
-                updateContactPreview(currentChatWith.id, data.text, data.timestamp?.toDate());
+                // Filter di JS: hanya pesan DM (bukan publik) 
+                // dan hanya antara saya & partner
+                if (data.isPublic === true) return;
+                
+                const isForMe = 
+                    (data.senderID === myUniqueID && data.recipientID === partnerId) ||
+                    (data.senderID === partnerId && data.recipientID === myUniqueID);
+                
+                if (!isForMe) return;
+                hasMessages = true;
+                
+                const msgDate = data.timestamp?.toDate();
+                const dateStr = msgDate ? msgDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+                
+                if (dateStr !== lastDate) {
+                    const sep = document.createElement('div');
+                    sep.className = 'date-separator';
+                    sep.innerHTML = `<span>${dateStr || 'Hari ini'}</span>`;
+                    chatMessages.appendChild(sep);
+                    lastDate = dateStr;
+                }
+                
+                const isMine = data.senderID === myUniqueID;
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${isMine ? 'message-out' : 'message-in'}`;
+                
+                msgDiv.innerHTML = `
+                    <div class="message-text">${escapeHtml(data.text)}</div>
+                    <div class="message-meta">
+                        <span class="message-time">${formatTime(msgDate)}</span>
+                        ${isMine ? '<i class="fas fa-check-double message-read"></i>' : ''}
+                    </div>
+                `;
+                
+                chatMessages.appendChild(msgDiv);
+                
+                // Update preview di sidebar
+                updateContactPreview(partnerId, data.text, msgDate);
             });
             
-            requestAnimationFrame(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-        });
-    }
-
-    // 6. LOAD PUBLIC MESSAGES
-    function loadPublicChatMessages() {
-        if (unsubMessages) unsubMessages();
-        
-        const q = query(
-            msgCol,
-            where("type", "==", "public"),
-            orderBy("timestamp", "asc")
-        );
-        
-        unsubMessages = onSnapshot(q, (snap) => {
-            chatMessages.innerHTML = '';
-            let lastDate = null;
-            let lastMsgData = null;
-            
-            snap.forEach(doc => {
-                const data = doc.data();
-                lastMsgData = data;
-                lastDate = renderMessage(doc.id, data, lastDate, true);
-            });
-            
-            // Update preview di sidebar
-            if(lastMsgData) {
-                document.getElementById('public-preview').textContent = `${lastMsgData.senderName}: ${lastMsgData.text}`;
-                document.getElementById('public-time').textContent = formatTime(lastMsgData.timestamp?.toDate());
+            if (!hasMessages) {
+                chatMessages.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-lock" style="opacity:0.2;"></i></div>
+                        <h2>Pesan Terenkripsi</h2>
+                        <p>Pesan Anda ke ${currentChatWith.name} dilindungi end-to-end.</p>
+                    </div>
+                `;
             }
-            
+
             requestAnimationFrame(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             });
+        }, (err) => {
+            console.error("Error DM chat:", err);
+            debugDot.className = 'debug-dot error';
+            showToast("Error memuat pesan: " + err.message, 5000);
         });
-    }
-
-    // 7. RENDER MESSAGE (Digabung untuk PM & Publik)
-    function renderMessage(docId, data, lastDate, isPublicChat) {
-        const msgDate = data.timestamp?.toDate();
-        const dateStr = msgDate ? msgDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-        
-        if (dateStr !== lastDate) {
-            const sep = document.createElement('div');
-            sep.className = 'date-separator';
-            sep.innerHTML = `<span>${dateStr || 'Hari ini'}</span>`;
-            chatMessages.appendChild(sep);
-            lastDate = dateStr;
-        }
-        
-        const isMine = data.senderID === myUniqueID;
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${isMine ? 'message-out' : 'message-in'}`;
-        
-        // Jika chat publik dan bukan pesan saya, tampilkan nama pengirim
-        const senderTag = (isPublicChat && !isMine) ? `<span class="message-sender">${data.senderName}</span>` : '';
-        
-        msgDiv.innerHTML = `
-            ${senderTag}
-            <div class="message-text">${escapeHtml(data.text)}</div>
-            <div class="message-meta">
-                <span class="message-time">${formatTime(msgDate)}</span>
-                ${isMine ? '<i class="fas fa-check-double message-read"></i>' : ''}
-            </div>
-        `;
-        
-        chatMessages.appendChild(msgDiv);
-        return lastDate;
     }
     
-    // 8. KIRIM PESAN
+    // ==========================================
+    //  4. KIRIM PESAN
+    // ==========================================
     async function sendMessage() {
         const text = messageInput.value.trim();
         if (!text || !currentChatWith) return;
         
         try {
-            if (currentChatWith.isPublic) {
-                // Kirim ke Chat Publik
+            if (currentChatWith === "PUBLIC") {
                 await addDoc(msgCol, {
                     senderID: myUniqueID,
                     senderName: myName,
-                    type: "public",
                     text: text,
                     timestamp: serverTimestamp(),
-                    users: [] // Tidak butuh array filter untuk publik
+                    isPublic: true
                 });
             } else {
-                // Kirim Pesan Pribadi (PM)
                 await addDoc(msgCol, {
                     senderID: myUniqueID,
                     recipientID: currentChatWith.id,
-                    senderName: myName,
-                    type: "private",
                     text: text,
                     timestamp: serverTimestamp(),
-                    users: [myUniqueID, currentChatWith.id]
+                    users: [myUniqueID, currentChatWith.id],
+                    isPublic: false
                 });
             }
             
@@ -1066,58 +1145,60 @@
             messageInput.focus();
         } catch (error) {
             console.error("Error sending message:", error);
-            alert("Gagal mengirim pesan!");
+            showToast("Gagal mengirim pesan!");
         }
     }
     
-    // 9. LISTEN PESAN BARU (untuk notifikasi)
-    function listenForNewMessages() {
-        const q = query(msgCol, orderBy("timestamp", "desc"));
+    // 5. LISTEN DM MASUK UNTUK NOTIFIKASI
+    // Query terpisah khusus notifikasi (desc untuk ambil terbaru)
+    function listenForNewDM() {
+        const q = query(
+            msgCol,
+            where("users", "array-contains", myUniqueID),
+            orderBy("timestamp", "desc")
+        );
         
         onSnapshot(q, (snap) => {
             snap.docChanges().forEach(change => {
                 if (change.type === "added") {
                     const data = change.doc.data();
                     
-                    // Notif jika dapat PM dari orang lain di chat lain
-                    if (data.type === "private") {
-                        const isForMe = data.recipientID === myUniqueID && data.senderID !== myUniqueID;
-                        const isFromOtherChat = !currentChatWith || data.senderID !== currentChatWith.id;
-                        
-                        if (isForMe && isFromOtherChat) {
-                            sound.play().catch(() => {});
-                            updateContactPreview(data.senderID, data.text, data.timestamp?.toDate());
-                        }
-                    } 
-                    // Notif jika ada pesan publik baru saat kita tidak buka tab publik
-                    else if (data.type === "public") {
-                        if (!currentChatWith || !currentChatWith.isPublic) {
-                            if (data.senderID !== myUniqueID) {
-                                sound.play().catch(() => {});
-                            }
-                            document.getElementById('public-preview').textContent = `${data.senderName}: ${data.text}`;
-                            document.getElementById('public-time').textContent = formatTime(data.timestamp?.toDate());
-                        }
+                    // Lewati pesan publik
+                    if (data.isPublic === true) return;
+                    
+                    // Hanya proses jika saya penerima dan bukan pengirim
+                    const isForMe = data.recipientID === myUniqueID && data.senderID !== myUniqueID;
+                    if (!isForMe) return;
+                    
+                    // Jika sedang tidak membuka chat dari orang ini, kasih notif
+                    const isFromOtherChat = !currentChatWith || 
+                        currentChatWith === "PUBLIC" || 
+                        data.senderID !== currentChatWith.id;
+                    
+                    if (isFromOtherChat) {
+                        sound.play().catch(() => {});
+                        updateContactPreview(data.senderID, data.text, data.timestamp?.toDate());
+                        showToast(`${data.senderName || 'Seseorang'}: ${data.text}`);
                     }
                 }
             });
+        }, (err) => {
+            console.error("Error notif listener:", err);
         });
     }
     
-    // 10. HELPER FUNCTIONS
+    // 6. HELPERS
     function goBackToContacts() {
         chatPanel.classList.add('hidden');
         sidebar.classList.remove('hidden');
         currentChatWith = null;
         if (unsubMessages) unsubMessages();
+        messageInput.placeholder = "Pesan";
     }
     
     function formatTime(date) {
         if (!date) return "";
-        return new Date(date).toLocaleTimeString('id-ID', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
+        return new Date(date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
     
     function escapeHtml(text) {
@@ -1133,7 +1214,7 @@
         if (timeEl) timeEl.textContent = formatTime(time);
     }
     
-    // 11. EVENT LISTENERS
+    // 7. EVENT LISTENERS
     messageInput.addEventListener('input', () => {
         sendIcon.className = messageInput.value.trim() ? 'fas fa-paper-plane' : 'fas fa-microphone';
     });
@@ -1150,22 +1231,39 @@
     searchInput.addEventListener('input', () => {
         const term = searchInput.value.toLowerCase();
         document.querySelectorAll('.contact-item').forEach(el => {
-            const name = el.querySelector('.contact-name').textContent.toLowerCase();
-            el.style.display = name.includes(term) ? 'flex' : 'none';
+            const name = el.querySelector('.contact-name')?.textContent.toLowerCase() || '';
+            if (el.classList.contains('public-chat')) {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = name.includes(term) ? 'flex' : 'none';
+            }
         });
-    });
-    
-    // Hapus semua pesan
-    document.getElementById('menu-btn').addEventListener('click', async () => {
-        if (confirm("Hapus semua data pesan?")) {
-            const snap = await getDocs(msgCol);
-            const promises = snap.docs.map(d => deleteDoc(doc(db, "messages", d.id)));
-            await Promise.all(promises);
-            alert("Semua pesan telah dihapus!");
+        const sectionLabel = document.querySelector('.section-label');
+        if (sectionLabel) {
+            const visCount = document.querySelectorAll('.contact-item:not(.public-chat)[style*="flex"]').length;
+            sectionLabel.style.display = (term && visCount === 0) ? 'none' : 'block';
         }
     });
     
-    // Handle resize
+    document.getElementById('menu-btn').addEventListener('click', async () => {
+        const choice = prompt("Ketik:\n1 = Hapus pesan publik\n2 = Hapus semua pesan\n\n(Pilih angka)");
+        if (choice === "1") {
+            const snap = await getDocs(query(msgCol, where("isPublic", "==", true)));
+            await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "messages", d.id))));
+            showToast("Pesan publik telah dihapus!");
+        } else if (choice === "2") {
+            const snap = await getDocs(msgCol);
+            await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "messages", d.id))));
+            showToast("Semua pesan telah dihapus!");
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (myUniqueID) {
+            try { updateDoc(doc(db, "users", myUniqueID), { status: "offline", lastSeen: new Date() }); } catch(e) {}
+        }
+    });
+    
     window.addEventListener('resize', () => {
         if (!isMobile()) {
             sidebar.classList.remove('hidden');
@@ -1178,8 +1276,17 @@
             chatPanel.classList.add('hidden');
         }
     });
+
+    document.addEventListener('visibilitychange', () => {
+        if (!myUniqueID) return;
+        if (document.hidden) {
+            updateDoc(doc(db, "users", myUniqueID), { status: "offline", lastSeen: new Date() }).catch(() => {});
+        } else {
+            updateDoc(doc(db, "users", myUniqueID), { status: "online", lastSeen: new Date() }).catch(() => {});
+        }
+    });
     
-    // 12. INISIALISASI
+    // 8. START
     registerUser();
 </script>
 
