@@ -5,30 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Realtime Firebase</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; border-bottom: 1px solid #ccc; }
-        #message-form { padding: 10px; display: flex; }
-        #message-input { flex: 1; padding: 10px; }
-        button { padding: 10px 20px; }
-        .msg { margin-bottom: 10px; padding: 8px; border-radius: 5px; background: #f1f1f1; }
-        .user-name { font-weight: bold; color: #007bff; display: block; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; background: #f4f4f9; }
+        header { padding: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; }
+        #message-form { padding: 15px; background: #fff; display: flex; gap: 10px; border-top: 1px solid #ccc; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        #username { width: 100px; }
+        #message-input { flex: 1; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; background: #007bff; color: white; }
+        .btn-delete { background: #dc3545; font-size: 12px; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .user-name { font-weight: bold; color: #007bff; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
+<header>
+    <strong>Firebase Chat</strong>
+    <button id="clear-btn" class="btn-delete">Hapus Semua Pesan</button>
+</header>
+
 <div id="chat-box"></div>
 
 <form id="message-form">
-    <input type="text" id="username" placeholder="Nama kamu" required>
+    <input type="text" id="username" placeholder="Nama" required>
     <input type="text" id="message-input" placeholder="Ketik pesan..." required>
     <button type="submit">Kirim</button>
 </form>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Konfigurasi kamu
     const firebaseConfig = {
         apiKey: "AIzaSyBVDW4FjpABAPY1xUWmf49w0tRXfzggluU",
         authDomain: "zennie-6b1d1.firebaseapp.com",
@@ -38,13 +46,18 @@
         appId: "1:789293061077:web:28ed8b33e6a0ea29c0235c"
     };
 
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const messagesCol = collection(db, "messages");
 
     const chatBox = document.getElementById("chat-box");
     const messageForm = document.getElementById("message-form");
+    const clearBtn = document.getElementById("clear-btn");
+
+    // Audio untuk notifikasi
+    const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+
+    let isInitialLoad = true;
 
     // 1. Kirim Pesan
     messageForm.addEventListener("submit", async (e) => {
@@ -52,21 +65,22 @@
         const user = document.getElementById("username").value;
         const text = document.getElementById("message-input").value;
 
-        try {
-            await addDoc(messagesCol, {
-                name: user,
-                message: text,
-                timestamp: serverTimestamp()
-            });
-            document.getElementById("message-input").value = "";
-        } catch (err) {
-            console.error("Error kirim:", err);
-        }
+        await addDoc(messagesCol, {
+            name: user,
+            message: text,
+            timestamp: serverTimestamp()
+        });
+        document.getElementById("message-input").value = "";
     });
 
-    // 2. Baca Pesan Secara Realtime
+    // 2. Baca Pesan Secara Realtime & Sound Notif
     const q = query(messagesCol, orderBy("timestamp", "asc"));
     onSnapshot(q, (snapshot) => {
+        // Cek jika ada pesan baru masuk (bukan saat loading pertama kali)
+        if (!isInitialLoad && snapshot.docChanges().some(change => change.type === "added")) {
+            notificationSound.play().catch(e => console.log("User must interact first for sound"));
+        }
+        
         chatBox.innerHTML = "";
         snapshot.forEach((doc) => {
             const data = doc.data();
@@ -76,6 +90,17 @@
             chatBox.appendChild(div);
         });
         chatBox.scrollTop = chatBox.scrollHeight;
+        isInitialLoad = false;
+    });
+
+    // 3. Fungsi Hapus Semua Pesan
+    clearBtn.addEventListener("click", async () => {
+        if (confirm("Hapus semua pesan secara permanen?")) {
+            const querySnapshot = await getDocs(messagesCol);
+            querySnapshot.forEach(async (document) => {
+                await deleteDoc(doc(db, "messages", document.id));
+            });
+        }
     });
 </script>
 
