@@ -3,63 +3,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zennie Realtime Chat</title>
+    <title>Zennie WhatsApp Clone</title>
     <style>
-        :root { --primary: #075e54; --secondary: #128c7e; --bg: #e5ddd5; }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; background: var(--bg); }
+        :root { 
+            --primary: #075e54; 
+            --secondary: #128c7e; 
+            --bg: #e5ddd5; 
+            --panel-bg: #fff;
+            --chat-bg: #efeae2;
+            --bubble-out: #d9fdd3;
+            --bubble-in: #fff;
+            --header-color: #008069;
+            --search-bg: #f6f6f6;
+            --border-light: #e9edef;
+            --text-dark: #111b21;
+            --text-light: #667781;
+            --text-muted: #8696a0;
+        }
         
-        header { padding: 15px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        #my-id-display { font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
-
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Message Bubbles */
-        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .public { background: white; align-self: flex-start; border-left: 5px solid #34b7f1; }
-        .private { background: #dcf8c6; align-self: flex-end; border-left: 5px solid #25d366; }
+        body { 
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            height: 100vh; 
+            background: var(--chat-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
         
-        .meta { font-size: 10px; font-weight: bold; margin-bottom: 4px; display: block; }
-        .dest { color: #e91e63; font-style: italic; }
-
-        #input-area { background: #f0f0f0; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #ddd; }
-        .row { display: flex; gap: 10px; }
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            max-width: 1600px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
         
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline: none; }
-        #message-input { flex: 1; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; background: var(--secondary); color: white; font-weight: bold; cursor: pointer; }
-        .btn-clear { background: #b33939; font-size: 11px; }
+        /* Panel Sidebar (Kontak) */
+        .sidebar {
+            width: 30%;
+            min-width: 280px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: var(--header-color);
+            color: white;
+            height: 59px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            color: #3b4a54;
+            font-size: 18px;
+        }
+        
+        .search-container {
+            padding: 8px 12px;
+            background: var(--search-bg);
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 6px 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .search-icon {
+            color: var(--text-muted);
+            margin-right: 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            background: transparent;
+            color: var(--text-dark);
+        }
+        
+        .contacts-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .contact-item:hover {
+            background: #f0f2f5;
+        }
+        
+        .contact-avatar {
+            width: 49px;
+            height: 49px;
+            border-radius: 50%;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 13px;
+            font-size: 20px;
+            color: #3b4a54;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        
+        .contact-name {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .contact-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .contact-message {
+            color: var(--text-light);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        
+        .unread-badge {
+            background: #25d366;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        /* Panel Chat */
+        .chat-panel {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            background: var(--chat-bg);
+            position: relative;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            background: var(--header-color);
+            color: white;
+            height: 59px;
+            z-index: 10;
+        }
+        
+        .chat-contact-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .chat-contact-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .chat-contact-status {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px 60px;
+            overflow-y: auto;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill-opacity="0.05"><path d="M0 0h100v100H0z"/><path d="M0 100h20v-20H0zm25 0h25v-25H25zm30 0h20v-20H55zm25 0h20v-20H80zM0 75h20V55H0zm25 0h25V50H25zm30 0h20V55H55zm25 0h20V55H80zM0 50h20V30H0zm25 0h25V25H25zm30 0h20V30H55zm25 0h20V30H80zM0 25h20V5H0zm25 0h25V0H25zm30 0h20V5H55zm25 0h20V5H80z" fill-rule="evenodd"/></svg>');
+            background-color: #efeae2;
+            background-repeat: repeat;
+        }
+        
+        .message {
+            max-width: 65%;
+            margin-bottom: 10px;
+            position: relative;
+            padding: 6px 7px 8px 9px;
+            border-radius: 7.5px;
+            box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+        }
+        
+        .message-out {
+            margin-left: auto;
+            background: var(--bubble-out);
+        }
+        
+        .message-in {
+            margin-right: auto;
+            background: var(--bubble-in);
+        }
+        
+        .message-text {
+            font-size: 14.2px;
+            line-height: 19px;
+            color: var(--text-dark);
+            margin-right: 55px;
+            word-wrap: break-word;
+        }
+        
+        .message-time {
+            position: absolute;
+            right: 7px;
+            bottom: 5px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .message-read {
+            position: absolute;
+            right: 8px;
+            bottom: 5px;
+            color: #53bdeb;
+            font-size: 16px;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .input-tools {
+            display: flex;
+            gap: 12px;
+            margin: 0 8px;
+            color: var(--text-muted);
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 9px 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f0f2f5;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin: 0 8px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 1px var(--secondary);
+        }
+        
+        .send-button {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        
+        .send-button:hover {
+            background: rgba(0, 128, 0, 0.1);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: var(--text-muted);
+        }
+        
+        .empty-state-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+        
+        .empty-state-text {
+            font-size: 14px;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+        
+        /* ID Display */
+        .id-display {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 20;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar, .chat-panel {
+                width: 100%;
+            }
+            
+            .sidebar {
+                height: 100%;
+                position: absolute;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .chat-messages {
+                padding: 10px 15px;
+            }
+        }
+        
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message {
+            animation: fadeIn 0.3s ease;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-<header>
-    <div>
-        <strong>Zennie Chat</strong>
-        <div id="my-id-display">Generating ID...</div>
+<div class="app-container">
+    <!-- Sidebar / Kontak -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="user-avatar" id="user-avatar">U</div>
+            <div class="header-actions">
+                <button id="groups-btn" style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-users"></i>
+                </button>
+                <button id="status-btn" style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-circle-notch"></i>
+                </button>
+                <button id="new-chat-btn" style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-comment-medical"></i>
+                </button>
+                <button id="menu-btn" style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-ellipsis-vertical"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+                <input type="text" placeholder="Cari atau mulai chat baru" id="search-input">
+            </div>
+        </div>
+        
+        <div class="contacts-list" id="contacts-list">
+            <!-- Daftar kontak akan dimuat di sini -->
+        </div>
+        
+        <div class="id-display" id="my-id-display">Membuat ID Anda...</div>
     </div>
-    <button id="clear-btn" class="btn-clear">Hapus Database</button>
-</header>
-
-<div id="chat-box"></div>
-
-<div id="input-area">
-    <div class="row">
-        <input type="text" id="username" placeholder="Nama Anda" required>
-        <select id="msg-type">
-            <option value="public">Publik</option>
-            <option value="private">Pribadi (PM)</option>
-        </select>
-        <input type="text" id="target-id" placeholder="ID Tujuan PM">
+    
+    <!-- Chat Panel -->
+    <div class="chat-panel" id="chat-panel">
+        <div class="chat-header" id="chat-header">
+            <!-- Akan diisi saat memilih kontak -->
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fas fa-comments"></i></div>
+                <div class="empty-state-text">
+                    <h2>Zennie Web</h2>
+                    <p>Kirim dan terima pesan tanpa menyimpan nomor telepon Anda.<br><br>
+                    Gunakan Zennie di hingga 4 perangkat yang terhubung dan 1 telepon secara bersamaan.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="input-tools">
+                <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;">
+                    <i class="fas fa-face-smile"></i>
+                </button>
+                <button style="background:none;border:none;color:var(--text-muted);cursor:pointer;">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+            </div>
+            
+            <input type="text" class="chat-input" id="message-input" placeholder="Ketik pesan">
+            
+            <button class="send-button" id="send-button">
+                <i class="fas fa-microphone" id="send-icon"></i>
+            </button>
+        </div>
     </div>
-    <form id="message-form" class="row">
-        <input type="text" id="message-input" placeholder="Ketik pesan..." required>
-        <button type="submit">Kirim</button>
-    </form>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBVDW4FjpABAPY1xUWmf49w0tRXfzggluU",
@@ -78,81 +494,277 @@
     const userCol = collection(db, "users");
 
     let myUniqueID = "";
+    let currentChatWith = null;
     const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-
+    
+    // Elemen DOM
+    const contactsList = document.getElementById('contacts-list');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatHeader = document.getElementById('chat-header');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const sendIcon = document.getElementById('send-icon');
+    const searchInput = document.getElementById('search-input');
+    const userAvatar = document.getElementById('user-avatar');
+    const myIdDisplay = document.getElementById('my-id-display');
+    const sidebar = document.getElementById('sidebar');
+    
     // 1. DAFTARKAN USER KE DATABASE SAAT MASUK
     async function registerUser() {
+        const username = prompt("Masukkan nama Anda:") || "Anonim";
+        userAvatar.textContent = username.charAt(0).toUpperCase();
+        
         const newDoc = await addDoc(userCol, {
+            name: username,
             joinedAt: serverTimestamp(),
-            status: "online"
+            status: "online",
+            lastSeen: serverTimestamp()
         });
-        myUniqueID = newDoc.id; // Menggunakan ID dokumen Firestore sebagai ID Unik
-        document.getElementById('my-id-display').innerText = "ID ANDA: " + myUniqueID;
+        
+        myUniqueID = newDoc.id;
+        myIdDisplay.textContent = `ID Anda: ${myUniqueID}`;
+        
+        // Mulai mendengarkan pesan setelah ID didaftarkan
+        startMessageListener();
+        loadContacts();
     }
-    registerUser();
-
+    
     // 2. KIRIM PESAN
-    document.getElementById('message-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const type = document.getElementById('msg-type').value;
-        const target = document.getElementById('target-id').value.trim();
-
-        if (type === 'private' && !target) return alert("Isi ID Tujuan!");
-
+    async function sendMessage(text) {
+        if (!text.trim() || !currentChatWith) return;
+        
         await addDoc(msgCol, {
             senderID: myUniqueID,
-            senderName: document.getElementById('username').value || "Anon",
-            text: document.getElementById('message-input').value,
-            type: type,
-            recipient: type === 'private' ? target : 'all',
-            timestamp: serverTimestamp()
+            recipientID: currentChatWith.id,
+            senderName: userAvatar.textContent,
+            recipientName: currentChatWith.name,
+            text: text.trim(),
+            timestamp: serverTimestamp(),
+            isRead: false
         });
-        document.getElementById('message-input').value = "";
-    });
-
-    // 3. LISTEN PESAN (REALTIME)
-    let initialLoad = true;
-    const q = query(msgCol, orderBy("timestamp", "asc"));
-    
-    onSnapshot(q, (snap) => {
-        const chatBox = document.getElementById('chat-box');
         
-        // Notif suara jika ada pesan baru masuk (selain dari kita sendiri)
-        if (!initialLoad && snap.docChanges().some(c => c.type === "added")) {
-            const lastDoc = snap.docChanges().find(c => c.type === "added").doc.data();
-            if (lastDoc.senderID !== myUniqueID) sound.play().catch(() => {});
-        }
-
-        chatBox.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            
-            // Filter Keamanan: Hanya tampilkan jika Publik atau ditujukan ke kita/dari kita
-            const isVisible = data.type === 'public' || data.recipient === myUniqueID || data.senderID === myUniqueID;
-            
-            if (isVisible) {
-                const div = document.createElement('div');
-                div.className = `msg ${data.type}`;
-                const destInfo = data.type === 'private' ? `<span class="dest"> ke ${data.recipient}</span>` : '';
+        messageInput.value = '';
+        sendIcon.className = 'fas fa-microphone';
+    }
+    
+    // 3. LISTEN PESAN (REALTIME)
+    function startMessageListener() {
+        let initialLoad = true;
+        
+        // Query untuk pesan publik dan pesan pribadi yang melibatkan saya
+        const q = query(msgCol, orderBy("timestamp", "asc"));
+        
+        onSnapshot(q, (snap) => {
+            if (!initialLoad) {
+                // Periksa apakah ada pesan baru untuk percakapan saat ini
+                const hasNewMessage = snap.docChanges().some(change => 
+                    change.type === "added" && 
+                    (change.doc.data().senderID === currentChatWith?.id || change.doc.data().recipientID === currentChatWith?.id)
+                );
                 
-                div.innerHTML = `
-                    <span class="meta">${data.senderName} (${data.senderID})${destInfo}</span>
-                    ${data.text}
-                `;
-                chatBox.appendChild(div);
+                if (hasNewMessage) {
+                    sound.play().catch(() => {});
+                }
             }
+            
+            if (currentChatWith) {
+                displayMessages(snap);
+            }
+            
+            initialLoad = false;
         });
-        chatBox.scrollTop = chatBox.scrollHeight;
-        initialLoad = false;
+    }
+    
+    // 4. MUAT KONTAK
+    async function loadContacts() {
+        // Di sini Anda bisa mengganti dengan query yang sesuai
+        // Untuk contoh, kita akan menampilkan semua pengguna yang online
+        const usersQuery = query(userCol, orderBy("joinedAt", "asc"));
+        
+        onSnapshot(usersQuery, (snap) => {
+            contactsList.innerHTML = '';
+            
+            snap.forEach(doc => {
+                const userData = doc.data();
+                if (doc.id === myUniqueID) return; // Jangan tampilkan diri sendiri
+                
+                const contactItem = document.createElement('div');
+                contactItem.className = 'contact-item';
+                contactItem.dataset.userId = doc.id;
+                
+                // Tentukan status online
+                const isOnline = userData.status === "online";
+                
+                contactItem.innerHTML = `
+                    <div class="contact-avatar" style="background-color: ${isOnline ? '#dcf8c6' : '#f0f2f5'}">
+                        ${userData.name.charAt(0).toUpperCase()}
+                        ${isOnline ? '<div style="position:absolute;width:10px;height:10px;background:#25d366;border-radius:50%;border:2px solid white;"></div>' : ''}
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-header">
+                            <div class="contact-name">${userData.name}</div>
+                            <div class="contact-time">${formatTime(userData.lastSeen?.toDate())}</div>
+                        </div>
+                        <div class="contact-preview">
+                            <div class="contact-message">Klik untuk mulai chat</div>
+                        </div>
+                    </div>
+                `;
+                
+                contactItem.addEventListener('click', () => {
+                    openChat({
+                        id: doc.id,
+                        name: userData.name,
+                        status: userData.status
+                    });
+                });
+                
+                contactsList.appendChild(contactItem);
+            });
+        });
+    }
+    
+    // 5. BUKA CHAT DENGAN KONTAK
+    function openChat(contact) {
+        currentChatWith = contact;
+        
+        // Perbarui header chat
+        chatHeader.innerHTML = `
+            <div class="contact-avatar" style="background: ${contact.status === 'online' ? '#dcf8c6' : '#f0f2f5'}">
+                ${contact.name.charAt(0).toUpperCase()}
+            </div>
+            <div class="chat-contact-info">
+                <div class="chat-contact-name">${contact.name}</div>
+                <div class="chat-contact-status">${contact.status === 'online' ? 'online' : 'terakhir dilihat ' + formatTime(contact.lastSeen)}</div>
+            </div>
+            <div class="header-actions">
+                <button style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button style="background:none;border:none;color:white;cursor:pointer;">
+                    <i class="fas fa-ellipsis-vertical"></i>
+                </button>
+            </div>
+        `;
+        
+        // Muat pesan untuk kontak ini
+        const q = query(
+            msgCol, 
+            where("senderID", "in", [myUniqueID, contact.id]),
+            where("recipientID", "in", [myUniqueID, contact.id]),
+            orderBy("timestamp", "asc")
+        );
+        
+        onSnapshot(q, (snap) => {
+            displayMessages(snap);
+        });
+    }
+    
+    // 6. TAMPILKAN PESAN
+    function displayMessages(snapshot) {
+        chatMessages.innerHTML = '';
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const isMine = data.senderID === myUniqueID;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isMine ? 'message-out' : 'message-in'}`;
+            
+            const time = data.timestamp?.toDate() || new Date();
+            
+            messageDiv.innerHTML = `
+                <div class="message-text">${data.text}</div>
+                <div class="message-time">${formatTime(time)}</div>
+                ${isMine ? '<div class="message-read"><i class="fas fa-check-double"></i></div>' : ''}
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+        });
+        
+        // Scroll ke bawah
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // 7. FORMAT WAKTU
+    function formatTime(date) {
+        if (!date) return "";
+        return new Date(date).toLocaleTimeString('id-ID', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+    }
+    
+    // 8. EVENT LISTENERS
+    messageInput.addEventListener('input', (e) => {
+        if (e.target.value.trim()) {
+            sendIcon.className = 'fas fa-paper-plane';
+        } else {
+            sendIcon.className = 'fas fa-microphone';
+        }
     });
-
-    // 4. HAPUS SEMUA
-    document.getElementById('clear-btn').addEventListener('click', async () => {
+    
+    sendButton.addEventListener('click', () => {
+        sendMessage(messageInput.value);
+    });
+    
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage(messageInput.value);
+        }
+    });
+    
+    // 9. HAPUS SEMUA PESAN
+    document.getElementById('menu-btn').addEventListener('click', async () => {
         if (confirm("Hapus semua data pesan?")) {
             const snap = await getDocs(msgCol);
             snap.forEach(d => deleteDoc(doc(db, "messages", d.id)));
         }
     });
+    
+    // 10. TOGGLE SIDEBAR DI MOBILE
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('open');
+    };
+    
+    // Untuk mengakses sidebar di mobile (tombol di header chat)
+    // Anda bisa menambahkan tombol di header chat untuk ini
+    
+    // 11. CARI KONTAK
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const contacts = contactsList.querySelectorAll('.contact-item');
+        
+        contacts.forEach(contact => {
+            const name = contact.querySelector('.contact-name').textContent.toLowerCase();
+            contact.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+        });
+    });
+    
+    // 12. INISIALISASI
+    registerUser();
+    
+    // Update status online saat menutup tab
+    window.addEventListener('beforeunload', () => {
+        if (myUniqueID) {
+            // Di sini Anda bisa menambahkan kode untuk memperbarui status menjadi offline
+        }
+    });
+    
+    // Contoh: Update status offline saat menutup tab
+    const updateStatusOnClose = async () => {
+        if (myUniqueID) {
+            try {
+                // Ini memerlukan fungsi update yang tidak ada di kode asli
+                // Anda perlu menambahkan fungsi untuk memperbarui dokumen user
+            } catch (error) {
+                console.error("Gagal memperbarui status offline:", error);
+            }
+        }
+    };
 </script>
 
 </body>
